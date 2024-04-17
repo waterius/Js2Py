@@ -543,7 +543,7 @@ def TryStatement(type, block, handler, handlers, guardedHandlers, finalizer):
     if handler:
         identifier = handler['param']['name']
         holder = 'PyJsHolder_%s_%d' % (to_hex(identifier),
-                                       random.randrange(1e8))
+                                       random.randrange(six.integer_types[-1](1e8)))
         identifier = repr(identifier)
         result += 'except PyJsException as PyJsTempException:\n'
         # fill in except ( catch ) block and remember to recover holder variable to its previous state

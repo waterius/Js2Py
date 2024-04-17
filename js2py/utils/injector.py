@@ -14,6 +14,7 @@ if six.PY3:
 # Opcode constants used for comparison and replacecment
 LOAD_FAST = opcode.opmap['LOAD_FAST']
 LOAD_GLOBAL = opcode.opmap['LOAD_GLOBAL']
+LOAD_ATTR = opcode.opmap['LOAD_ATTR']
 STORE_FAST = opcode.opmap['STORE_FAST']
 
 
@@ -79,6 +80,7 @@ def append_arguments(code_obj, new_locals):
         (co_names.index(name), varnames.index(name)) for name in new_locals)
 
     is_new_bytecode = sys.version_info >= (3, 11)
+    is_new_load_attr = sys.version_info >= (3, 12)
     # Now we modify the actual bytecode
     modified = []
     drop_future_cache = False
@@ -97,7 +99,7 @@ def append_arguments(code_obj, new_locals):
         # it's one of the globals that we are replacing. Either way,
         # update its arg using the appropriate dict.
         drop_future_cache = False
-        if inst.opcode == LOAD_GLOBAL:
+        if inst.opcode == LOAD_GLOBAL or (is_new_load_attr and inst.opcode == LOAD_ATTR):
             idx = inst.arg
             if is_new_bytecode:
                 idx = idx // 2
